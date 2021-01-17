@@ -2,9 +2,9 @@ import tensorflow
 from tensorflow import keras
 from tensorflow.keras import activations
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers.convolutional import SeparableConv2D, MaxPooling2D
-from tensorflow.keras.layers.convolutional import MaxPooling2D
-from tensorflow.keras.layers.core import Activation, Flatten, Dropout, Dense
+from tensorflow.keras.layers import SeparableConv2D, MaxPooling2D
+from tensorflow.keras.layers import MaxPooling2D, BatchNormalization
+from tensorflow.keras.layers import Activation, Flatten, Dropout, Dense
 from tensorflow.keras import backend as K
 
 # Class for building neural net model.
@@ -59,5 +59,5 @@ class CancerNet:
             Dense(classes),
             Activation(activations.softmax)
         ])
-        
+
         return model
