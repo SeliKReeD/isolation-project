@@ -30,7 +30,7 @@ len_validation_paths = len(list(paths.list_images(config.validation_path)))
 logging.info(f"Retrieved {len_validation_paths} paths to validation samples.")
 
 # Get number of testing samples.
-logging.info("Start retrieving train paths.")
+logging.info("Start retrieving test samples paths.")
 len_test_paths = len(list(paths.list_images(config.test_path)))
 logging.info(f"Retrieved {len_test_paths} paths to testing samples.")
 
@@ -41,8 +41,8 @@ train_labels = to_categorical(train_labels)
 # Compute sum of each class in dataset.
 class_totals = train_labels.sum(axis=0)
 # Compute weight for each class presented in dataset.
-class_weights = class_totals.max()/class_totals
-
+class_weight = class_totals.max()/class_totals
+class_weight = {i : class_weight[i] for i in range(2)}
 # Data augmentation for training set.
 train_data_augmentation = ImageDataGenerator(
     rescale=1/255.0,
@@ -85,14 +85,21 @@ test_generator = validation_data_augmentation.flow_from_directory(
     shuffle=False,
     batch_size=batch_size)
 
-
 model=CancerNet.build(width = 48, height = 48,depth = 3,classes = 2)
 adagrad_optimizer=Adagrad(lr = learning_rate, decay = learning_rate/num_epochs)
 model.compile(
         loss = "binary_crossentropy",
         optimizer = adagrad_optimizer,
         metrics = ["accuracy"])
-model_name = datetime.now().strftime("%d-%m-%Y-%H-%M-%S-SNAPSHOT") + ".h5"
 
+model.fit_generator(
+  train_generator,
+  steps_per_epoch=len_train_paths//batch_size,
+  validation_data=val_generator,
+  validation_steps=len_validation_paths//batch_size,
+  class_weight=class_weight,
+  epochs=num_epochs)
+
+model_name = datetime.now().strftime("%d-%m-%Y-%H-%M-%S-SNAPSHOT") + ".h5"
 
 model.save(f"{config.root_dir}/snapshots/{model_name}")
