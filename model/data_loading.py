@@ -1,4 +1,4 @@
-from configuration import config
+import config
 from imutils import paths
 import random, shutil, os
 
@@ -26,12 +26,16 @@ datasets = ([
 for (type, file_paths, base_folder) in datasets:
     print(f"Start building {type} dataset.")
 
+    if not os.path.exists(config.data_root_path):
+        print(f"Creating folder {config.data_root_path}.")
+        os.mkdir(config.data_root_path)
+
     if not os.path.exists(base_folder):
         print(f"Creating folder {base_folder}.")
         os.mkdir(base_folder)
 
     for file_path in file_paths:
-        file_name=path.split(os.path.sep)[-1]
+        file_name=file_path.split(os.path.sep)[-1]
         label=file_name[-5:-4]
 
         labeled_path = os.path.sep.join([base_folder, label])
