@@ -1,15 +1,59 @@
 import tensorflow
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers.convolutional import SeparableConv2D, MaxPooling2D
+from tensorflow.keras.layers.convolutional import MaxPooling2D
+from tensorflow.keras.layers.core import Activation, Flatten, Dropout, Dense
+from tensorflow.keras import backend as K
 
-model = Sequential([
-    Dense(9, input_shape=(3,3), activation="relu"),
-    Dense(32, activation="relu"),
-    Dense(1, activation="sigmoid")
-])
+class CancerNet:
+  @staticmethod
+  def build(width,height,depth,classes):
+    model=Sequential()
+    shape=(height,width,depth)
+    channelDim=-1
 
-model.compile(loss="binary_crossentropy",
-                optimizer="adam")
+    if K.image_data_format()=="channels_first":
+      shape=(depth,height,width)
+      channelDim=1
 
-print(model.summary())
+    model.add(SeparableConv2D(32, (3,3), padding="same",input_shape=shape))
+    model.add(Activation("relu"))
+    model.add(BatchNormalization(axis=channelDim))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(Dropout(0.25))
+
+    model.add(SeparableConv2D(64, (3,3), padding="same"))
+    model.add(Activation("relu"))
+    model.add(BatchNormalization(axis=channelDim))
+
+    model.add(SeparableConv2D(64, (3,3), padding="same"))
+    model.add(Activation("relu"))
+    model.add(BatchNormalization(axis=channelDim))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(Dropout(0.25))
+
+    model.add(SeparableConv2D(128, (3,3), padding="same"))
+    model.add(Activation("relu"))
+    model.add(BatchNormalization(axis=channelDim))
+
+    model.add(SeparableConv2D(128, (3,3), padding="same"))
+    model.add(Activation("relu"))
+    model.add(BatchNormalization(axis=channelDim))
+    
+    model.add(SeparableConv2D(128, (3,3), padding="same"))
+    model.add(Activation("relu"))
+    model.add(BatchNormalization(axis=channelDim))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(Dropout(0.25))
+
+    model.add(Flatten())
+    model.add(Dense(256))
+    model.add(Activation("relu"))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.5))
+
+    model.add(Dense(classes))
+    model.add(Activation("softmax"))
+
+    return model
