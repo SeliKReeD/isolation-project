@@ -12,7 +12,7 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 
 # Initialize values for training process.
-num_epochs=40
+num_epochs=10
 learning_rate=1e-2
 batch_size=32
 
