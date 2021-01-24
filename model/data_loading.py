@@ -6,6 +6,7 @@ print(f"Start scanning for images in input folder {config.input_dataset}")
 all_filepaths = list(paths.list_images(config.input_dataset))
 random.seed(42)
 random.shuffle(all_filepaths)
+all_filepaths = all_filepaths[:70000]
 
 print("Split all data int train/test lists.")
 train_index = int(len(all_filepaths)*config.train_split)
@@ -14,8 +15,8 @@ test_paths = all_filepaths[train_index:]
 print(len(train_paths))
 
 validation_index = int(len(train_paths)*config.validation_split)
-validation_paths = train_paths[validation_index:]
-train_paths = train_paths[:validation_index]
+validation_paths = train_paths[:validation_index]
+train_paths = train_paths[validation_index:]
 
 datasets = ([
     ("train", train_paths, config.train_path),

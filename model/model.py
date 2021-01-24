@@ -19,62 +19,44 @@ class CancerNet:
             channelDim=1
 
         model = Sequential([
-                    Conv2D(32, (3,3), padding="same", input_shape=shape),
-                    Activation(activations.relu),
-                    BatchNormalization(axis=channelDim),
-                    MaxPooling2D((2,2)),
+            SeparableConv2D(16, (3,3), padding = "same", input_shape = shape),
+            Activation(activations.relu),
+            BatchNormalization(axis = channelDim),
+            MaxPooling2D(pool_size = (2,2)),
+            Dropout(0.25),
 
-                    Conv2D(64, (3,3), padding="same"),
-                    Activation(activations.relu),
-                    BatchNormalization(axis=channelDim),
-                    MaxPooling2D((2,2)),
+            SeparableConv2D(32, (3,3), padding = "same"),
+            Activation(activations.relu),
+            BatchNormalization(axis = channelDim),
 
-                    Conv2D(128, (3,3), padding="same"),
-                    Activation(activations.relu),
-                    BatchNormalization(axis=channelDim),
-                    MaxPooling2D((2,2)),
+            SeparableConv2D(32, (3,3), padding = "same"),
+            Activation(activations.relu),
+            BatchNormalization(axis = channelDim),
+            MaxPooling2D(pool_size = (2,2)),
+            Dropout(0.25),
 
-                    Flatten(),
-                    Dense(256, activation='relu'),
-                    Dense(2)
-            # SeparableConv2D(32, (3,3), padding = same_padding, input_shape = shape),
-            # Activation(activations.relu),
-            # BatchNormalization(axis = channelDim),
-            # MaxPooling2D(pool_size = (2,2)),
-            # Dropout(0.25),
-            #
-            # SeparableConv2D(64, (3,3), padding = same_padding),
-            # Activation(activations.relu),
-            # BatchNormalization(axis = channelDim),
-            #
-            # SeparableConv2D(64, (3,3), padding = same_padding),
-            # Activation(activations.relu),
-            # BatchNormalization(axis = channelDim),
-            # MaxPooling2D(pool_size = (2,2)),
-            # Dropout(0.25),
-            #
-            # SeparableConv2D(128, (3,3), padding = same_padding),
-            # Activation(activations.relu),
-            # BatchNormalization(axis = channelDim),
-            #
-            # SeparableConv2D(128, (3,3), padding = same_padding),
-            # Activation(activations.relu),
-            # BatchNormalization(axis = channelDim),
-            #
-            # SeparableConv2D(128, (3,3), padding = same_padding),
-            # Activation(activations.relu),
-            # BatchNormalization(axis = channelDim),
-            # MaxPooling2D(pool_size = (2,2)),
-            # Dropout(0.25),
-            #
-            # Flatten(),
-            # Dense(256),
-            # Activation(activations.relu),
-            # BatchNormalization(),
-            # Dropout(0.5),
-            #
-            # Dense(classes),
-            # Activation(activations.softmax)
+            SeparableConv2D(64, (3,3), padding = "same"),
+            Activation(activations.relu),
+            BatchNormalization(axis = channelDim),
+
+            SeparableConv2D(64, (3,3), padding = "same"),
+            Activation(activations.relu),
+            BatchNormalization(axis = channelDim),
+
+            SeparableConv2D(128, (3,3), padding = "same"),
+            Activation(activations.relu),
+            BatchNormalization(axis = channelDim),
+            MaxPooling2D(pool_size = (2,2)),
+            Dropout(0.25),
+
+            Flatten(),
+            Dense(512),
+            Activation(activations.relu),
+            BatchNormalization(),
+            Dropout(0.5),
+
+            Dense(classes),
+            Activation(activations.softmax)
         ])
 
         return model
