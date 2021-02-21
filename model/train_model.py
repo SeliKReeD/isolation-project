@@ -1,7 +1,6 @@
 import os
 import config
 import logging
-import keras
 from keras.utils import to_categorical
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import Adagrad
@@ -12,9 +11,9 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 
 # Initialize values for training process.
-num_epochs=10
-learning_rate=1e-2
-batch_size=32
+num_epochs = 40
+learning_rate = 1e-2
+batch_size = 64
 
 # Load paths to training samples.
 logging.info("Start retrieving train paths.")
@@ -42,29 +41,21 @@ train_labels = to_categorical(train_labels)
 class_totals = train_labels.sum(axis=0)
 # Compute weight for each class presented in dataset.
 class_weight = class_totals.max()/class_totals
-class_weight = {i : class_weight[i] for i in range(2)}
+class_weight = {i: class_weight[i] for i in range(2)}
 # Data augmentation for training set.
 train_data_augmentation = ImageDataGenerator(
-    rescale=1/255.0,
-    rotation_range=20,
-    zoom_range=0.05,
-    width_shift_range=0.1,
-    height_shift_range=0.1,
-    shear_range=0.05,
-    horizontal_flip=True,
-    vertical_flip=True,
-    fill_mode="nearest")
+    rescale=1/255.0)
 
-# We dont need augmented examples in validation set,
+# We don`t need augmented examples in validation set,
 # so we only rescale all samples.
 validation_data_augmentation = ImageDataGenerator(
-    rescale=1 / 255.0)
+    rescale=1/255.0)
 
 # Data generators for train, validation and test sets.
 train_generator = train_data_augmentation.flow_from_directory(
     config.train_path,
     class_mode="categorical",
-    target_size=(48,48),
+    target_size=(48, 48),
     color_mode="rgb",
     shuffle=True,
     batch_size=batch_size)
@@ -72,7 +63,7 @@ train_generator = train_data_augmentation.flow_from_directory(
 val_generator = validation_data_augmentation.flow_from_directory(
     config.validation_path,
     class_mode="categorical",
-    target_size=(48,48),
+    target_size=(48, 48),
     color_mode="rgb",
     shuffle=False,
     batch_size=batch_size)
@@ -80,19 +71,19 @@ val_generator = validation_data_augmentation.flow_from_directory(
 test_generator = validation_data_augmentation.flow_from_directory(
     config.test_path,
     class_mode="categorical",
-    target_size=(48,48),
+    target_size=(48, 48),
     color_mode="rgb",
     shuffle=False,
     batch_size=batch_size)
 
-model=CancerNet.build(width = 48, height = 48,depth = 3,classes = 2)
-adagrad_optimizer=Adagrad(lr = learning_rate, decay = learning_rate/num_epochs)
+model = CancerNet.build(width=48, height=48, depth=3, classes=2)
+adagrad_optimizer = Adagrad(lr=learning_rate, decay=learning_rate/num_epochs)
 model.compile(
-        loss = "binary_crossentropy",
-        optimizer = adagrad_optimizer,
-        metrics = ["accuracy"])
+        loss="binary_crossentropy",
+        optimizer=adagrad_optimizer,
+        metrics=["accuracy"])
 
-model.fit_generator(
+model.fit(
   train_generator,
   steps_per_epoch=len_train_paths//batch_size,
   validation_data=val_generator,

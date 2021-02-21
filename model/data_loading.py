@@ -6,15 +6,14 @@ print(f"Start scanning for images in input folder {config.input_dataset}")
 all_filepaths = list(paths.list_images(config.input_dataset))
 random.seed(42)
 random.shuffle(all_filepaths)
-all_filepaths = all_filepaths[:70000]
 
 print("Split all data int train/test lists.")
-train_index = int(len(all_filepaths)*config.train_split)
+train_index = int(len(all_filepaths) * config.train_split)
 train_paths = all_filepaths[:train_index]
 test_paths = all_filepaths[train_index:]
 print(len(train_paths))
 
-validation_index = int(len(train_paths)*config.validation_split)
+validation_index = int(len(train_paths) * config.validation_split)
 validation_paths = train_paths[:validation_index]
 train_paths = train_paths[validation_index:]
 
@@ -36,8 +35,8 @@ for (type, file_paths, base_folder) in datasets:
         os.mkdir(base_folder)
 
     for file_path in file_paths:
-        file_name=file_path.split(os.path.sep)[-1]
-        label=file_name[-5:-4]
+        file_name = file_path.split(os.path.sep)[-1]
+        label = file_name[-5:-4]
 
         labeled_path = os.path.sep.join([base_folder, label])
 
